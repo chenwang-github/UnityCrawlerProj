@@ -4,12 +4,10 @@ public class InverseKinematics : MonoBehaviour
 {
     public int ChainLength = 2;
     public Transform Target;
-    public Transform Pole;
     public int Iterations = 10;
     public float Delta = 0.001f;
     [Range(0, 1)]
     public float SnapStrength = 1f;
-
     private float[] SegmentLengths;
     private float TotalLength;
     private Transform[] Joints;
@@ -114,19 +112,6 @@ public class InverseKinematics : MonoBehaviour
 
                 if ((Positions[Positions.Length - 1] - desiredPosition).sqrMagnitude < Delta * Delta)
                     break;
-            }
-        }
-
-        if (Pole != null)
-        {
-            var polePos = GetPositionRelativeToRoot(Pole);
-            for (int i = 1; i < Positions.Length - 1; i++)
-            {
-                var plane = new Plane(Positions[i + 1] - Positions[i - 1], Positions[i - 1]);
-                var projectedPole = plane.ClosestPointOnPlane(polePos);
-                var projectedJoint = plane.ClosestPointOnPlane(Positions[i]);
-                var rotationAngle = Vector3.SignedAngle(projectedJoint - Positions[i - 1], projectedPole - Positions[i - 1], plane.normal);
-                Positions[i] = Quaternion.AngleAxis(rotationAngle, plane.normal) * (Positions[i] - Positions[i - 1]) + Positions[i - 1];
             }
         }
 
